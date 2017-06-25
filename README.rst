@@ -1,6 +1,8 @@
 monitor requests
 ================
 
+|Build Status| |PyPI| |PyPI Version|
+
 A tool to check for remote calls via the `requests`_ module.
 
 Working on a large and complicated codebase with lot's of slow unit tests?
@@ -40,3 +42,9 @@ Of course you can also set this up inside a test runner (or a session fixture if
 You can also write to a file.
 
 .. _requests: https://github.com/requests/requests
+.. |Build Status| image:: https://travis-ci.org/danpozmanter/monitor_requests.svg?branch=master
+   :target: https://travis-ci.org/danpozmanter/monitor_requests
+.. |PyPI| image:: https://img.shields.io/pypi/v/monitor_requests.svg
+   :target: https://pypi.python.org/pypi/monitor_requests/
+.. |PyPI Version| image:: https://img.shields.io/pypi/pyversions/monitor_requests.svg
+   :target: https://pypi.python.org/pypi/monitor_requests/

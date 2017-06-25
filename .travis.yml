@@ -1,6 +1,7 @@
 language: python
 python:
     - "3.6"
+install: "python setup.py -q install"
 notifications:
   email: false
 script: python test_monitor.py

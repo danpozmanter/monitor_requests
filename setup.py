@@ -9,7 +9,7 @@ with open('README.rst', 'r') as f:
 setup(
     author='Dan Pozmanter',
     classifiers=[
-        'Development Status :: 5 - Stable',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
@@ -21,7 +21,7 @@ setup(
     keywords='requests testing monitoring',
     license='BSD',
     long_description=long_description,
-    name='Monitor Requests',
+    name='MonitorRequests',
     packages=['monitor_requests'],
     url='https://github.com/danpozmanter/monitor_requests',
     version=version,

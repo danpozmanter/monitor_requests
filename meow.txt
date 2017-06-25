@@ -1,0 +1,149 @@
+___________Analysis__________
+Total Requests: 10
+Time (Seconds): 2.915133
+URL Count:      4
+Domain Count:   3
+Domains:        google.com, theonion.com, www.theonion.com
+__________URLS__________
+__________URL________
+URL:      http://google.com
+Requests: 1
+______Tracebacks_____
+File "/usr/lib/python2.7/unittest/main.py", line 232, in runTests
+    self.result = testRunner.run(self.test)
+  File "/usr/lib/python2.7/unittest/runner.py", line 151, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/case.py", line 393, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/case.py", line 329, in run
+    testMethod()
+  File "test_wow.py", line 18, in test_wow_method
+    result = wow()
+  File "/home/daniel/dev/monitor_requests/wow.py", line 13, in wow
+    return requests.get('http://google.com')
+
+__________URL________
+URL:      http://theonion.com
+Requests: 1
+______Tracebacks_____
+File "/usr/lib/python2.7/unittest/main.py", line 232, in runTests
+    self.result = testRunner.run(self.test)
+  File "/usr/lib/python2.7/unittest/runner.py", line 151, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/case.py", line 393, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/case.py", line 329, in run
+    testMethod()
+  File "test_wow.py", line 18, in test_wow_method
+    result = wow()
+  File "/home/daniel/dev/monitor_requests/wow.py", line 7, in wow
+    requests.get('http://theonion.com')
+
+__________URL________
+URL:      http://www.theonion.com/article/sean-spicer-announces-there-only-enough-time-left--56153
+Requests: 3
+______Tracebacks_____
+File "/usr/lib/python2.7/unittest/main.py", line 232, in runTests
+    self.result = testRunner.run(self.test)
+  File "/usr/lib/python2.7/unittest/runner.py", line 151, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/case.py", line 393, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/case.py", line 329, in run
+    testMethod()
+  File "test_wow.py", line 18, in test_wow_method
+    result = wow()
+  File "/home/daniel/dev/monitor_requests/wow.py", line 10, in wow
+    requests.get('http://www.theonion.com/article/sean-spicer-announces-there-only-enough-time-left--56153')
+
+File "/usr/lib/python2.7/unittest/main.py", line 232, in runTests
+    self.result = testRunner.run(self.test)
+  File "/usr/lib/python2.7/unittest/runner.py", line 151, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/case.py", line 393, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/case.py", line 329, in run
+    testMethod()
+  File "test_wow.py", line 18, in test_wow_method
+    result = wow()
+  File "/home/daniel/dev/monitor_requests/wow.py", line 8, in wow
+    requests.get('http://www.theonion.com/article/sean-spicer-announces-there-only-enough-time-left--56153')
+
+File "/usr/lib/python2.7/unittest/main.py", line 232, in runTests
+    self.result = testRunner.run(self.test)
+  File "/usr/lib/python2.7/unittest/runner.py", line 151, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/case.py", line 393, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/case.py", line 329, in run
+    testMethod()
+  File "test_wow.py", line 18, in test_wow_method
+    result = wow()
+  File "/home/daniel/dev/monitor_requests/wow.py", line 9, in wow
+    requests.get('http://www.theonion.com/article/sean-spicer-announces-there-only-enough-time-left--56153')
+
+__________URL________
+URL:      http://www.theonion.com/graphic/kinky-lawn-chair-likes-leaving-woman-marks-all-ove-56131
+Requests: 5
+______Tracebacks_____
+File "/usr/lib/python2.7/unittest/runner.py", line 151, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/suite.py", line 70, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/suite.py", line 108, in run
+    test(result)
+  File "/usr/lib/python2.7/unittest/case.py", line 393, in __call__
+    return self.run(*args, **kwds)
+  File "/usr/lib/python2.7/unittest/case.py", line 329, in run
+    testMethod()
+  File "test_wow.py", line 18, in test_wow_method
+    result = wow()
+  File "/home/daniel/dev/monitor_requests/wow.py", line 12, in wow
+    meow()
+  File "/home/daniel/dev/monitor_requests/wow.py", line 4, in meow
+    requests.get('http://www.theonion.com/graphic/kinky-lawn-chair-likes-leaving-woman-marks-all-ove-56131')
+

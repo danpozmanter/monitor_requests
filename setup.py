@@ -23,7 +23,6 @@ setup(
     long_description=long_description,
     name='Monitor Requests',
     packages=['monitor_requests'],
-    setup_requires=['requests>=2.8.0'],
     url='https://github.com/danpozmanter/monitor_requests',
     version=version,
     zip_safe=False,

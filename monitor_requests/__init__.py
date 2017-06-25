@@ -27,7 +27,10 @@ class Monitor(object):
             setattr(requests, method, self._generate_request_method(stock_method_name))
 
     def _generate_request_method(self, stock_method_name):
-        """Helper to generate mock functions for http methods."""
+        """Helper to generate mock functions for http methods.
+        :param stock_method_name: String.
+        :return: Mocked request method
+        """
         def mock_request_method(url, **kwargs):
             self._log_request(url)
             start = datetime.datetime.now()
@@ -47,7 +50,9 @@ class Monitor(object):
         self.analysis['domains'].add(urlparse(url).netloc)
 
     def _report_analysis(self, output):
-        """Helper to output the analysis."""
+        """Helper to output the analysis.
+        :param output: Stream. Output destination.
+        """
         output.write('___________Analysis__________\n')
         output.write('Total Requests: {}\n'.format(self.analysis['total_requests']))
         output.write('Time (Seconds): {}\n'.format(self.analysis['time']))
@@ -59,6 +64,7 @@ class Monitor(object):
         """Print out the requests, general analysis, and optionally unique tracebacks.
         :param tracebacks: Boolean. Display unique tracebacks for each request.
         :param inspect_limit: Integer. How deep the stack trace should be.
+        :param output: Stream. Output destination.
         """
         if output != sys.stdout:
             self._report_analysis(output)

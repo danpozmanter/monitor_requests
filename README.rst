@@ -41,6 +41,12 @@ Here's a quick tool for just that purpose.
 Of course you can also set this up inside a test runner (or a session fixture if using py.test).
 You can also write to a file.
 
+**Installation**
+
+.. code:: bash
+    
+    pip install MonitorRequests
+
 .. _requests: https://github.com/requests/requests
 .. |Build Status| image:: https://travis-ci.org/danpozmanter/monitor_requests.svg?branch=master
    :target: https://travis-ci.org/danpozmanter/monitor_requests

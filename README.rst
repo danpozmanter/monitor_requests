@@ -1,7 +1,7 @@
 monitor requests
 ================
 
-|Build Status| |PyPI| |PyPI Version|
+|Build Status| |PyPI|
 
 A tool to check for remote calls via the `requests`_ module.
 

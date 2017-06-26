@@ -44,7 +44,7 @@ You can also write to a file.
 .. _requests: https://github.com/requests/requests
 .. |Build Status| image:: https://travis-ci.org/danpozmanter/monitor_requests.svg?branch=master
    :target: https://travis-ci.org/danpozmanter/monitor_requests
-.. |PyPI| image:: https://img.shields.io/pypi/v/monitor_requests.svg
-   :target: https://pypi.python.org/pypi/monitor_requests/
-.. |PyPI Version| image:: https://img.shields.io/pypi/pyversions/monitor_requests.svg
-   :target: https://pypi.python.org/pypi/monitor_requests/
+.. |PyPI| image:: https://img.shields.io/pypi/v/MonitorRequests.svg
+   :target: https://pypi.python.org/pypi/MonitorRequests/
+.. |PyPI Version| image:: https://img.shields.io/pypi/pyversions/MonitorRequests.svg
+   :target: https://pypi.python.org/pypi/MonitorRequests/

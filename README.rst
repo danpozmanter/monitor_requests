@@ -46,5 +46,3 @@ You can also write to a file.
    :target: https://travis-ci.org/danpozmanter/monitor_requests
 .. |PyPI| image:: https://img.shields.io/pypi/v/MonitorRequests.svg
    :target: https://pypi.python.org/pypi/MonitorRequests/
-.. |PyPI Version| image:: https://img.shields.io/pypi/pyversions/MonitorRequests.svg
-   :target: https://pypi.python.org/pypi/MonitorRequests/

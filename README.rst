@@ -27,8 +27,9 @@ Here's a quick tool for just that purpose.
         @classmethod
         def tearDownClass(cls):
             print('External calls for example:')
-            cls.monitor.report()
-            cls.monitor.stop()
+            # Optionally pass tracebacks=False to skip outputing tracebacks
+            # Report will call .stop() by default.
+            cls.monitor.report(tracebacks=False)
 
         def test_example_method(self):
             result = example_method()
@@ -37,9 +38,16 @@ Here's a quick tool for just that purpose.
     if __name__ == 'main':
         unittest.main()
 
+You can also set this up inside a test runner (or a session fixture if using py.test).
 
-Of course you can also set this up inside a test runner (or a session fixture if using py.test).
-You can also write to a file.
+To write to a file:
+
+.. code:: python
+
+        @classmethod
+        def tearDownClass(cls):
+            with open('output.txt', 'w') as f:
+                cls.monitor.report(output=f)
 
 **Installation**
 

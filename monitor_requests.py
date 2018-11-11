@@ -1,10 +1,11 @@
 """Monitor Requests."""
 import datetime
+import re
 import sys
 import traceback
 from requests.utils import urlparse
 
-__version__ = '0.0.1'
+__version__ = '0.1.0'
 
 
 class Monitor(object):
@@ -12,10 +13,13 @@ class Monitor(object):
 
     METHODS = ('delete', 'get', 'head', 'options', 'patch', 'post', 'put')
 
-    def __init__(self):
+    def __init__(self, domain_patterns=[]):
         """Initialize Monitor, hot patch requests."""
         import requests
         self.stock_requests_method = requests.request
+        self.domain_patterns = [
+            re.compile(domain_pattern) for domain_pattern in domain_patterns
+        ]
         self.analysis = {'total_requests': 0, 'domains': set(), 'time': 0}
         self.logged_requests = {}
 
@@ -48,8 +52,16 @@ class Monitor(object):
             return response
         return mock_request_method
 
+    def _check_domain(self, domain):
+        return [
+            pattern.match(domain) for pattern in self.domain_patterns
+        ] != []
+
     def _log_request(self, url):
         """Log request, store traceback, and update request count, domain."""
+        domain = urlparse(url).netloc
+        if not self._check_domain(domain):
+            return
         if url not in self.logged_requests:
             self.logged_requests[url] = {'count': 0, 'tracebacks': set()}
         self.logged_requests[url]['count'] += 1
@@ -57,7 +69,7 @@ class Monitor(object):
         tb_list = [f for f in traceback.format_stack() if m_init not in f]
         self.logged_requests[url]['tracebacks'].add(tuple(tb_list))
         self.analysis['total_requests'] += 1
-        self.analysis['domains'].add(urlparse(url).netloc)
+        self.analysis['domains'].add(domain)
 
     def _report_analysis(self, output):
         """Output the analysis.

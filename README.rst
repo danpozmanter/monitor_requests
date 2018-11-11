@@ -38,7 +38,36 @@ Here's a quick tool for just that purpose.
     if __name__ == 'main':
         unittest.main()
 
-You can also set this up inside a test runner (or a session fixture if using py.test).
+
+To filter what domains are captured:
+
+.. code:: python
+
+    # Only capture facebook and google requests:
+    monitor = monitor_requests.Monitor(
+        domain_patterns=['.*\.facebook\.com', '.*\.google\.com']
+    )
+
+To set this up inside a django test runner:
+(Note you may need to run with --parallel=1)
+
+.. code:: python
+
+    def run_suite(self, suite, **kwargs):
+        monitor = monitor_requests.Monitor()
+        test_result = super(ReelioTestRunner, self).run_suite(suite, **kwargs)
+        monitor.report()
+        return test_result
+
+To set up inside a py.test session fixture:
+
+.. code:: python
+
+    @pytest.fixture(scope='session')
+    def session_fixture():
+        monitor = monitor_requests.Monitor()
+        yield
+        monitor.report()
 
 To write to a file:
 

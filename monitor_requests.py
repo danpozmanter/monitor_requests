@@ -53,6 +53,8 @@ class Monitor(object):
         return mock_request_method
 
     def _check_domain(self, domain):
+        if not self.domain_patterns:
+            return True
         return [
             pattern.match(domain) for pattern in self.domain_patterns
         ] != []

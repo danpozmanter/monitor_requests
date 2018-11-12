@@ -135,8 +135,11 @@ With `debug=True`:
     URL Count:      2
     Domain Count:   2
     Domains:        facebook.com, google.com
+    
+With `debug=False`:
 
-    With `debug=False`:
+
+.. code:: text
 
     ___________Analysis__________
 

@@ -5,7 +5,7 @@ import sys
 import traceback
 from requests.utils import urlparse
 
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 
 class Monitor(object):
@@ -86,7 +86,7 @@ class Monitor(object):
         self.analysis['total_requests'] += 1
         self.analysis['domains'].add(domain)
 
-    def _report_analysis(self, output):
+    def _output_analysis(self, output):
         """Output the analysis.
 
         :param output: Stream. Output destination.
@@ -102,8 +102,40 @@ class Monitor(object):
         output.write('Domains:        {}\n'.format(
             ', '.join(sorted(list(self.analysis['domains'])))))
 
+    def _output_responses(self, output, url):
+        output.write('_______Responses______\n')
+        for rs in self.logged_requests[url]['responses']:
+            output.write('<StatusCode>{}</StatusCode>\n'.format(rs[0]))
+            output.write('<Content>{}</Content>\n'.format(rs[1]))
+
+    def _output_tracebacks(self, output, url, inspect_limit):
+        output.write('______Tracebacks_____\n')
+        for tb in self.logged_requests[url]['tracebacks']:
+            output.write('{}\n'.format(
+                ''.join(tb[-inspect_limit:]).strip()))
+
+    def _output_urls(self, output, tracebacks, responses, inspect_limit):
+        """Output URLS.
+
+        :param tracebacks:
+        :param responses:
+        :param inspect_limit:
+        """
+        output.write('__________URLS__________\n\n')
+        for url in sorted(self.logged_requests.keys()):
+            output.write('__________URL________\n')
+            output.write('URL:      {}\n'.format(url))
+            output.write('Requests: {}\n'.format(
+                self.logged_requests[url]['count']))
+            if tracebacks:
+                self._output_tracebacks(output, url, inspect_limit)
+            if responses:
+                self._output_responses(output, url)
+            output.write('\n')
+
     def report(
         self,
+        urls=False,
         tracebacks=False,
         responses=False,
         debug=False,
@@ -113,8 +145,11 @@ class Monitor(object):
     ):
         """Print out the requests, general analysis, and optionally unique tracebacks.
 
-        :param tracebacks: Boolean. Display unique tracebacks per request.
-        :param responses: Boolean. Display response/request info per request.
+        If debug is True, show urls, tracebacks, and responses.
+        If tracebacks or responses are set to True, urls will be output.
+        :param urls: Boolean. Display unique urls requested.
+        :param tracebacks: Boolean. Display unique tracebacks per url.
+        :param responses: Boolean. Display response/request info per url.
         :param debug: Boolean. Convenience to display tracebacks and responses.
         :param inspect_limit: Integer. How deep the stack trace should be.
         :param output: Stream. Output destination.
@@ -123,26 +158,11 @@ class Monitor(object):
         tracebacks = tracebacks or debug
         responses = responses or debug
         if output != sys.stdout:
-            self._report_analysis(output)
-        output.write('__________URLS__________\n\n')
-        for url in sorted(self.logged_requests.keys()):
-            output.write('__________URL________\n')
-            output.write('URL:      {}\n'.format(url))
-            output.write('Requests: {}\n'.format(
-                self.logged_requests[url]['count']))
-            if tracebacks:
-                output.write('______Tracebacks_____\n')
-                for tb in self.logged_requests[url]['tracebacks']:
-                    output.write('{}\n'.format(
-                        ''.join(tb[-inspect_limit:]).strip()))
-            if responses:
-                output.write('_______Responses______\n')
-                for rs in self.logged_requests[url]['responses']:
-                    output.write('<StatusCode>{}</StatusCode>\n'.format(rs[0]))
-                    output.write('<Content>{}</Content>\n'.format(rs[1]))
-            output.write('\n')
+            self._output_analysis(output)
+        if debug or urls or tracebacks or responses:
+            self._output_urls(output, tracebacks, responses, inspect_limit)
         if output == sys.stdout:
-            self._report_analysis(output)
+            self._output_analysis(output)
         if stop:
             self.stop()
 

@@ -78,7 +78,11 @@ To write to a file:
             with open('output.txt', 'w') as f:
                 cls.monitor.report(output=f)
 
-Use `debug=True` to show both responses and tracebacks.
+For finer tuned control over output:
+
+* Use `debug=True` to show urls, responses, and tracebacks.
+* Use `urls=True` to show urls.
+* Use `tracebacks=True` or `respones=True` to show tracebacks or responses (urls will be shown as well, as both tracebacks and responses are organized by url).
 
 **Installation**
 
@@ -133,16 +137,6 @@ With `debug=True`:
     Domains:        facebook.com, google.com
 
     With `debug=False`:
-
-    __________URLS__________
-
-    __________URL________
-    URL:      http://facebook.com?param=test
-    Requests: 1
-
-    __________URL________
-    URL:      http://google.com
-    Requests: 1
 
     ___________Analysis__________
 

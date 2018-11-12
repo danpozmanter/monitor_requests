@@ -95,7 +95,7 @@ For finer tuned control over output:
 With `debug=True`:
 
 
-.. code:: bash
+.. code:: text
 
     __________URLS__________
 

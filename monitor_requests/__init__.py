@@ -5,7 +5,7 @@ import sys
 import traceback
 from requests.utils import urlparse
 
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 
 
 class Monitor(object):
@@ -18,29 +18,35 @@ class Monitor(object):
 
         :param domains:: List of regex patterns to match against.
         """
-        import requests
-        self.stock_requests_method = requests.request
         self.domain_patterns = [
             re.compile(domain_pattern) for domain_pattern in domains
         ]
         self.analysis = {'total_requests': 0, 'domains': set(), 'time': 0}
         self.logged_requests = {}
-
-        def mock_request(method, url, **kwargs):
-            start = datetime.datetime.now()
-            response = self.stock_requests_method(method, url, **kwargs)
-            self._log_request(url, response)
-            self.analysis['time'] += (
-                datetime.datetime.now() - start).total_seconds()
-            return response
-        requests.request = mock_request
+        # Mocking
+        import requests
+        self.stock_requests_method = requests.request
+        requests.request = self._generate_mocked_request()
         for method in self.METHODS:
             stock_method_name = 'stock_{}'.format(method)
             setattr(self, stock_method_name, getattr(requests, method))
-            setattr(requests, method, self._generate_request_method(
+            setattr(requests, method, self._generate_mocked_request_method(
                 stock_method_name))
 
-    def _generate_request_method(self, stock_method_name):
+    def _generate_mocked_request(self):
+        """Generate mock functions for http request.
+
+        :return: Mocked request.
+        """
+        def mock_request(method, url, **kwargs):
+            start = datetime.datetime.now()
+            response = self.stock_requests_method(method, url, **kwargs)
+            duration = (datetime.datetime.now() - start).total_seconds()
+            self._log_request(url, response, duration)
+            return response
+        return mock_request
+
+    def _generate_mocked_request_method(self, stock_method_name):
         """Generate mock functions for http methods.
 
         :param stock_method_name: String.
@@ -49,9 +55,8 @@ class Monitor(object):
         def mock_request_method(url, **kwargs):
             start = datetime.datetime.now()
             response = getattr(self, stock_method_name)(url, **kwargs)
-            self._log_request(url, response)
-            self.analysis['time'] += (
-                datetime.datetime.now() - start).total_seconds()
+            duration = (datetime.datetime.now() - start).total_seconds()
+            self._log_request(url, response, duration)
             return response
         return mock_request_method
 
@@ -64,7 +69,7 @@ class Monitor(object):
                 matched = True
         return matched
 
-    def _log_request(self, url, response):
+    def _log_request(self, url, response, duration):
         """Log request, store traceback/response data and update counts."""
         domain = urlparse(url).netloc
         if not self._check_domain(domain):
@@ -83,6 +88,7 @@ class Monitor(object):
             response.status_code,
             response.content,
         ))
+        self.analysis['time'] += duration
         self.analysis['total_requests'] += 1
         self.analysis['domains'].add(domain)
 

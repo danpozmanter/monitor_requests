@@ -5,7 +5,7 @@ import sys
 import traceback
 from requests.utils import urlparse
 
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 
 
 class Monitor(object):
@@ -27,9 +27,9 @@ class Monitor(object):
         self.logged_requests = {}
 
         def mock_request(method, url, **kwargs):
-            self._log_request(url)
             start = datetime.datetime.now()
             response = self.stock_requests_method(method, url, **kwargs)
+            self._log_request(url, response)
             self.analysis['time'] += (
                 datetime.datetime.now() - start).total_seconds()
             return response
@@ -47,9 +47,9 @@ class Monitor(object):
         :return: Mocked request method
         """
         def mock_request_method(url, **kwargs):
-            self._log_request(url)
             start = datetime.datetime.now()
             response = getattr(self, stock_method_name)(url, **kwargs)
+            self._log_request(url, response)
             self.analysis['time'] += (
                 datetime.datetime.now() - start).total_seconds()
             return response
@@ -64,17 +64,25 @@ class Monitor(object):
                 matched = True
         return matched
 
-    def _log_request(self, url):
-        """Log request, store traceback, and update request count, domain."""
+    def _log_request(self, url, response):
+        """Log request, store traceback/response data and update counts."""
         domain = urlparse(url).netloc
         if not self._check_domain(domain):
             return
         if url not in self.logged_requests:
-            self.logged_requests[url] = {'count': 0, 'tracebacks': set()}
+            self.logged_requests[url] = {
+                'count': 0,
+                'tracebacks': set(),
+                'responses': set()
+            }
         self.logged_requests[url]['count'] += 1
         m_init = 'monitor_requests/__init__.py'
         tb_list = [f for f in traceback.format_stack() if m_init not in f]
         self.logged_requests[url]['tracebacks'].add(tuple(tb_list))
+        self.logged_requests[url]['responses'].add((
+            response.status_code,
+            response.content,
+        ))
         self.analysis['total_requests'] += 1
         self.analysis['domains'].add(domain)
 
@@ -83,7 +91,7 @@ class Monitor(object):
 
         :param output: Stream. Output destination.
         """
-        output.write('___________Analysis__________\n')
+        output.write('___________Analysis__________\n\n')
         output.write('Total Requests: {}\n'.format(
             self.analysis['total_requests']))
         output.write('Time (Seconds): {}\n'.format(self.analysis['time']))
@@ -95,18 +103,28 @@ class Monitor(object):
             ', '.join(sorted(list(self.analysis['domains'])))))
 
     def report(
-        self, tracebacks=True, inspect_limit=10, output=sys.stdout, stop=True
+        self,
+        tracebacks=False,
+        responses=False,
+        debug=False,
+        inspect_limit=10,
+        output=sys.stdout,
+        stop=True
     ):
         """Print out the requests, general analysis, and optionally unique tracebacks.
 
-        :param tracebacks: Boolean. Display unique tracebacks for each request.
+        :param tracebacks: Boolean. Display unique tracebacks per request.
+        :param responses: Boolean. Display response/request info per request.
+        :param debug: Boolean. Convenience to display tracebacks and responses.
         :param inspect_limit: Integer. How deep the stack trace should be.
         :param output: Stream. Output destination.
         :param stop: Undo the hotpatching (True by default).
         """
+        tracebacks = tracebacks or debug
+        responses = responses or debug
         if output != sys.stdout:
             self._report_analysis(output)
-        output.write('__________URLS__________\n')
+        output.write('__________URLS__________\n\n')
         for url in sorted(self.logged_requests.keys()):
             output.write('__________URL________\n')
             output.write('URL:      {}\n'.format(url))
@@ -117,7 +135,12 @@ class Monitor(object):
                 for tb in self.logged_requests[url]['tracebacks']:
                     output.write('{}\n'.format(
                         ''.join(tb[-inspect_limit:]).strip()))
-                    output.write('\n')
+            if responses:
+                output.write('_______Responses______\n')
+                for rs in self.logged_requests[url]['responses']:
+                    output.write('<StatusCode>{}</StatusCode>\n'.format(rs[0]))
+                    output.write('<Content>{}</Content>\n'.format(rs[1]))
+            output.write('\n')
         if output == sys.stdout:
             self._report_analysis(output)
         if stop:

@@ -78,11 +78,77 @@ To write to a file:
             with open('output.txt', 'w') as f:
                 cls.monitor.report(output=f)
 
+Use `debug=True` to show both responses and tracebacks.
+
 **Installation**
 
 .. code:: bash
     
     pip install MonitorRequests
+
+**Example Output**
+
+With `debug=True`:
+
+__________URLS__________
+
+__________URL________
+URL:      http://facebook.com?param=test
+Requests: 1
+______Tracebacks_____
+File "example.py", line 22, in <module>
+    run()
+  File "example.py", line 18, in run
+    get_function_fb()
+  File "example.py", line 12, in get_function_fb
+    return requests.get('http://facebook.com?param=test')
+_______Responses______
+<StatusCode>200</StatusCode>
+<Content><!DOCTYPE html>
+<html lang="en" id="facebook" class="no_js">Etc/Etc</html></Content>
+
+__________URL________
+URL:      http://google.com
+Requests: 1
+______Tracebacks_____
+File "example.py", line 22, in <module>
+    run()
+  File "example.py", line 17, in run
+    get_function()
+  File "example.py", line 7, in get_function
+    return requests.get('http://google.com')
+_______Responses______
+<StatusCode>200</StatusCode>
+<Content><!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="en">Etc/Etc</html></Content>
+
+___________Analysis__________
+
+Total Requests: 2
+Time (Seconds): 1.16714
+URL Count:      2
+Domain Count:   2
+Domains:        facebook.com, google.com
+
+With `debug=False`:
+
+__________URLS__________
+
+__________URL________
+URL:      http://facebook.com?param=test
+Requests: 1
+
+__________URL________
+URL:      http://google.com
+Requests: 1
+
+___________Analysis__________
+
+Total Requests: 2
+Time (Seconds): 1.08454
+URL Count:      2
+Domain Count:   2
+Domains:        facebook.com, google.com
+
 
 .. _requests: https://github.com/requests/requests
 .. |Build Status| image:: https://travis-ci.org/danpozmanter/monitor_requests.svg?branch=master

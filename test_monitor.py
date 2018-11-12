@@ -18,7 +18,7 @@ def get_function():
 
 def get_function_fb():
     """Get call - facebook."""
-    return requests.get('http://facebook.com')
+    return requests.get('http://facebook.com?param=test')
 
 
 def get_function_fb_graph():

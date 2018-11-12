@@ -91,7 +91,7 @@ Use `debug=True` to show both responses and tracebacks.
 With `debug=True`:
 
 
-.. code:: bash
+.. code:: text
 
     __________URLS__________
 

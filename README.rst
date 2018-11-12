@@ -45,7 +45,7 @@ To filter what domains are captured:
 
     # Only capture facebook and google requests:
     monitor = monitor_requests.Monitor(
-        domain_patterns=['.*\.facebook\.com', '.*\.google\.com']
+        domains=['facebook\.com', 'google\.com']
     )
 
 To set this up inside a django test runner:

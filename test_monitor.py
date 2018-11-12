@@ -16,6 +16,16 @@ def get_function():
     return requests.get('http://google.com')
 
 
+def get_function_fb():
+    """Get call - facebook."""
+    return requests.get('http://facebook.com')
+
+
+def get_function_fb_graph():
+    """Get call - facebook."""
+    return requests.get('http://graph.facebook.com')
+
+
 class MonitorTestCase(unittest.TestCase):
     """Test Case."""
 
@@ -38,6 +48,29 @@ class MonitorTestCase(unittest.TestCase):
             report_output = f.read()
             self.assertTrue('Total Requests' in report_output)
             self.assertTrue('Domain Count:' in report_output)
+
+    def test_domain_filtering(self):
+        """Test domain filtering actually works."""
+        monitor = Monitor(domains=['google\.com'])
+        get_function()
+        get_function_fb()
+        get_function_fb_graph()
+        monitor.stop()
+        self.assertEqual(monitor.analysis['total_requests'], 1)
+        self.assertEqual(monitor.analysis['domains'], set(['google.com']))
+
+    def test_domain_filtering_fb(self):
+        """Test domain filtering actually works."""
+        monitor = Monitor(domains=['facebook\.com'])
+        get_function()
+        get_function_fb()
+        get_function_fb_graph()
+        monitor.stop()
+        self.assertEqual(monitor.analysis['total_requests'], 2)
+        self.assertEqual(
+            monitor.analysis['domains'],
+            set(['facebook.com', 'graph.facebook.com'])
+        )
 
     def test_reporting_stdout(self):
         """Test reporting to stdout."""

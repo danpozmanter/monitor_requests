@@ -5,7 +5,7 @@ import sys
 import traceback
 from requests.utils import urlparse
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 class Monitor(object):
@@ -13,12 +13,15 @@ class Monitor(object):
 
     METHODS = ('delete', 'get', 'head', 'options', 'patch', 'post', 'put')
 
-    def __init__(self, domain_patterns=[]):
-        """Initialize Monitor, hot patch requests."""
+    def __init__(self, domains=[]):
+        """Initialize Monitor, hot patch requests.
+
+        :param domains:: List of regex patterns to match against.
+        """
         import requests
         self.stock_requests_method = requests.request
         self.domain_patterns = [
-            re.compile(domain_pattern) for domain_pattern in domain_patterns
+            re.compile(domain_pattern) for domain_pattern in domains
         ]
         self.analysis = {'total_requests': 0, 'domains': set(), 'time': 0}
         self.logged_requests = {}
@@ -55,9 +58,11 @@ class Monitor(object):
     def _check_domain(self, domain):
         if not self.domain_patterns:
             return True
-        return [
-            pattern.match(domain) for pattern in self.domain_patterns
-        ] != []
+        matched = False
+        for pattern in self.domain_patterns:
+            if pattern.search(domain):
+                matched = True
+        return matched
 
     def _log_request(self, url):
         """Log request, store traceback, and update request count, domain."""

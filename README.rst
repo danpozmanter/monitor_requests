@@ -90,64 +90,66 @@ Use `debug=True` to show both responses and tracebacks.
 
 With `debug=True`:
 
-__________URLS__________
 
-__________URL________
-URL:      http://facebook.com?param=test
-Requests: 1
-______Tracebacks_____
-File "example.py", line 22, in <module>
-    run()
-  File "example.py", line 18, in run
-    get_function_fb()
-  File "example.py", line 12, in get_function_fb
-    return requests.get('http://facebook.com?param=test')
-_______Responses______
-<StatusCode>200</StatusCode>
-<Content><!DOCTYPE html>
-<html lang="en" id="facebook" class="no_js">Etc/Etc</html></Content>
+.. code::bash
+    __________URLS__________
 
-__________URL________
-URL:      http://google.com
-Requests: 1
-______Tracebacks_____
-File "example.py", line 22, in <module>
-    run()
-  File "example.py", line 17, in run
-    get_function()
-  File "example.py", line 7, in get_function
-    return requests.get('http://google.com')
-_______Responses______
-<StatusCode>200</StatusCode>
-<Content><!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="en">Etc/Etc</html></Content>
+    __________URL________
+    URL:      http://facebook.com?param=test
+    Requests: 1
+    ______Tracebacks_____
+    File "example.py", line 22, in <module>
+        run()
+      File "example.py", line 18, in run
+        get_function_fb()
+      File "example.py", line 12, in get_function_fb
+        return requests.get('http://facebook.com?param=test')
+    _______Responses______
+    <StatusCode>200</StatusCode>
+    <Content><!DOCTYPE html>
+    <html lang="en" id="facebook" class="no_js">Etc/Etc</html></Content>
 
-___________Analysis__________
+    __________URL________
+    URL:      http://google.com
+    Requests: 1
+    ______Tracebacks_____
+    File "example.py", line 22, in <module>
+        run()
+      File "example.py", line 17, in run
+        get_function()
+      File "example.py", line 7, in get_function
+        return requests.get('http://google.com')
+    _______Responses______
+    <StatusCode>200</StatusCode>
+    <Content><!doctype html><html itemscope="" itemtype="http://schema.org/WebPage" lang="en">Etc/Etc</html></Content>
 
-Total Requests: 2
-Time (Seconds): 1.16714
-URL Count:      2
-Domain Count:   2
-Domains:        facebook.com, google.com
+    ___________Analysis__________
 
-With `debug=False`:
+    Total Requests: 2
+    Time (Seconds): 1.16714
+    URL Count:      2
+    Domain Count:   2
+    Domains:        facebook.com, google.com
 
-__________URLS__________
+    With `debug=False`:
 
-__________URL________
-URL:      http://facebook.com?param=test
-Requests: 1
+    __________URLS__________
 
-__________URL________
-URL:      http://google.com
-Requests: 1
+    __________URL________
+    URL:      http://facebook.com?param=test
+    Requests: 1
 
-___________Analysis__________
+    __________URL________
+    URL:      http://google.com
+    Requests: 1
 
-Total Requests: 2
-Time (Seconds): 1.08454
-URL Count:      2
-Domain Count:   2
-Domains:        facebook.com, google.com
+    ___________Analysis__________
+
+    Total Requests: 2
+    Time (Seconds): 1.08454
+    URL Count:      2
+    Domain Count:   2
+    Domains:        facebook.com, google.com
 
 
 .. _requests: https://github.com/requests/requests

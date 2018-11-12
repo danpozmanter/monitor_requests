@@ -92,6 +92,7 @@ With `debug=True`:
 
 
 .. code::bash
+
     __________URLS__________
 
     __________URL________

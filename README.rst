@@ -88,11 +88,11 @@ For finer tuned control over output:
 
 If you want to activate monitor_requests for an entire test suite running parallel, you can run the included `tornado`_ server to persist request data:
 
-.. code::bash
+.. code:: bash
 
     monitor_requests_server --port=9003
 
-.. code::python
+.. code:: python
 
     def run_suite(self, suite, **kwargs):
         monitor = monitor_requests.Monitor(server_port=9003)
@@ -102,7 +102,7 @@ If you want to activate monitor_requests for an entire test suite running parall
 
 You will likely need to do additional overrides in your TestCase classes:
 
-.. code::python
+.. code:: python
 
     class ExampleTestCase(unittest.TestCase):
 

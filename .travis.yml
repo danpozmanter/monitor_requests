@@ -4,4 +4,4 @@ python:
 install: "pip install -r requirements.txt"
 notifications:
   email: false
-script: python tests/test_monitor.py python tests/test_server.py
+script: py.test

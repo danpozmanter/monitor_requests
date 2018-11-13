@@ -49,7 +49,7 @@ To filter what domains are captured:
     )
 
 To set this up inside a django test runner:
-(Note you may need to run with --parallel=1)
+(This will only work at the suite level if running tests in serial. Depending on your setup you may need to run with --parallel=1). Alternatively there are instructions further down on how to use `Server Moder` to push data asynchronously to an included `tornado`_ data server.
 
 .. code:: python
 
@@ -83,6 +83,35 @@ For finer tuned control over output:
 * Use `debug=True` to show urls, responses, and tracebacks.
 * Use `urls=True` to show urls.
 * Use `tracebacks=True` or `respones=True` to show tracebacks or responses (urls will be shown as well, as both tracebacks and responses are organized by url).
+
+***Server Mode***
+
+If you want to activate monitor_requests for an entire test suite running parallel, you can run the included `tornado`_ server to persist request data:
+
+.. code::bash
+
+    monitor_requests_server --port=9003
+
+.. code::python
+
+    def run_suite(self, suite, **kwargs):
+        monitor = monitor_requests.Monitor(server_port=9003)
+        test_result = super(ReelioTestRunner, self).run_suite(suite, **kwargs)
+        monitor.report()
+        return test_result
+
+You will likely need to do additional overrides in your TestCase classes:
+
+.. code::python
+
+    class ExampleTestCase(unittest.TestCase):
+
+        @classmethod
+        def setUpClass(cls):
+            cls.monitor = monitor_requests.Monitor(server_port=9003)
+
+Note that here there is no tearDownClass and no call to either stop() or report().
+That only happens at the session level.
 
 **Installation**
 
@@ -151,6 +180,7 @@ With `debug=False`:
 
 
 .. _requests: https://github.com/requests/requests
+.. _tornado: https://github.com/tornadoweb/tornado
 .. |Build Status| image:: https://travis-ci.org/danpozmanter/monitor_requests.svg?branch=master
    :target: https://travis-ci.org/danpozmanter/monitor_requests
 .. |PyPI| image:: https://img.shields.io/pypi/v/MonitorRequests.svg

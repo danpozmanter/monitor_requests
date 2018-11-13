@@ -4,8 +4,10 @@ import re
 import sys
 import traceback
 from requests.utils import urlparse
+from .data import DataHandler
+from .output import OutputHandler
 
-__version__ = '0.3.1'
+__version__ = '1.0.0'
 
 
 class Monitor(object):
@@ -13,7 +15,7 @@ class Monitor(object):
 
     METHODS = ('delete', 'get', 'head', 'options', 'patch', 'post', 'put')
 
-    def __init__(self, domains=[]):
+    def __init__(self, domains=[], server_port=None):
         """Initialize Monitor, hot patch requests.
 
         :param domains:: List of regex patterns to match against.
@@ -21,8 +23,6 @@ class Monitor(object):
         self.domain_patterns = [
             re.compile(domain_pattern) for domain_pattern in domains
         ]
-        self.analysis = {'total_requests': 0, 'domains': set(), 'time': 0}
-        self.logged_requests = {}
         # Mocking
         import requests
         self.stock_requests_method = requests.request
@@ -32,6 +32,7 @@ class Monitor(object):
             setattr(self, stock_method_name, getattr(requests, method))
             setattr(requests, method, self._generate_mocked_request_method(
                 stock_method_name))
+        self.data = DataHandler(server_port=server_port)
 
     def _generate_mocked_request(self):
         """Generate mock functions for http request.
@@ -74,70 +75,13 @@ class Monitor(object):
         domain = urlparse(url).netloc
         if not self._check_domain(domain):
             return
-        if url not in self.logged_requests:
-            self.logged_requests[url] = {
-                'count': 0,
-                'tracebacks': set(),
-                'responses': set()
-            }
-        self.logged_requests[url]['count'] += 1
         m_init = 'monitor_requests/__init__.py'
         tb_list = [f for f in traceback.format_stack() if m_init not in f]
-        self.logged_requests[url]['tracebacks'].add(tuple(tb_list))
-        self.logged_requests[url]['responses'].add((
-            response.status_code,
-            response.content,
-        ))
-        self.analysis['time'] += duration
-        self.analysis['total_requests'] += 1
-        self.analysis['domains'].add(domain)
+        self.data.log(url, domain, response, tb_list, duration)
 
-    def _output_analysis(self, output):
-        """Output the analysis.
-
-        :param output: Stream. Output destination.
-        """
-        output.write('___________Analysis__________\n\n')
-        output.write('Total Requests: {}\n'.format(
-            self.analysis['total_requests']))
-        output.write('Time (Seconds): {}\n'.format(self.analysis['time']))
-        output.write('URL Count:      {}\n'.format(
-            len(self.logged_requests.keys())))
-        output.write('Domain Count:   {}\n'.format(
-            len(self.analysis['domains'])))
-        output.write('Domains:        {}\n'.format(
-            ', '.join(sorted(list(self.analysis['domains'])))))
-
-    def _output_responses(self, output, url):
-        output.write('_______Responses______\n')
-        for rs in self.logged_requests[url]['responses']:
-            output.write('<StatusCode>{}</StatusCode>\n'.format(rs[0]))
-            output.write('<Content>{}</Content>\n'.format(rs[1]))
-
-    def _output_tracebacks(self, output, url, inspect_limit):
-        output.write('______Tracebacks_____\n')
-        for tb in self.logged_requests[url]['tracebacks']:
-            output.write('{}\n'.format(
-                ''.join(tb[-inspect_limit:]).strip()))
-
-    def _output_urls(self, output, tracebacks, responses, inspect_limit):
-        """Output URLS.
-
-        :param tracebacks:
-        :param responses:
-        :param inspect_limit:
-        """
-        output.write('__________URLS__________\n\n')
-        for url in sorted(self.logged_requests.keys()):
-            output.write('__________URL________\n')
-            output.write('URL:      {}\n'.format(url))
-            output.write('Requests: {}\n'.format(
-                self.logged_requests[url]['count']))
-            if tracebacks:
-                self._output_tracebacks(output, url, inspect_limit)
-            if responses:
-                self._output_responses(output, url)
-            output.write('\n')
+    def refresh(self):
+        """Refresh data from store (server or instance)."""
+        self.logged_requests, self.analysis = self.data.retrieve()
 
     def report(
         self,
@@ -163,12 +107,12 @@ class Monitor(object):
         """
         tracebacks = tracebacks or debug
         responses = responses or debug
-        if output != sys.stdout:
-            self._output_analysis(output)
-        if debug or urls or tracebacks or responses:
-            self._output_urls(output, tracebacks, responses, inspect_limit)
-        if output == sys.stdout:
-            self._output_analysis(output)
+        self.refresh()
+        output_handler = OutputHandler(
+            output, urls, tracebacks, responses, debug, inspect_limit,
+            self.logged_requests, self.analysis
+        )
+        output_handler.write()
         if stop:
             self.stop()
 

@@ -19,6 +19,10 @@ setup(
         'Topic :: Software Development :: Testing',
     ],
     description='Check remote calls via request',
+    entry_points="""
+[console_scripts]
+monitor_requests_server = monitor_requests.server:run_server
+""",
     keywords='requests testing monitoring',
     license='BSD',
     long_description=long_description,

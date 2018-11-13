@@ -34,8 +34,9 @@ class MonitorTestCase(unittest.TestCase):
         monitor = Monitor()
         get_function()
         monitor.stop()
+        monitor.refresh()
         self.assertEqual(monitor.analysis['total_requests'], 1)
-        self.assertTrue(monitor.analysis['time'] > 0)
+        self.assertTrue(monitor.analysis['duration'] > 0)
 
     def test_reporting(self):
         """Test reporting to file."""
@@ -56,6 +57,7 @@ class MonitorTestCase(unittest.TestCase):
         get_function_fb()
         get_function_fb_graph()
         monitor.stop()
+        monitor.refresh()
         self.assertEqual(monitor.analysis['total_requests'], 1)
         self.assertEqual(monitor.analysis['domains'], set(['google.com']))
 
@@ -66,6 +68,7 @@ class MonitorTestCase(unittest.TestCase):
         get_function_fb()
         get_function_fb_graph()
         monitor.stop()
+        monitor.refresh()
         self.assertEqual(monitor.analysis['total_requests'], 2)
         self.assertEqual(
             monitor.analysis['domains'],

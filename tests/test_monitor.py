@@ -2,8 +2,47 @@
 import sys
 import tempfile
 import unittest
+import mock  # Python 2.x compatibility
+import responses
 import requests
+import requests_mock
 from monitor_requests import Monitor
+
+
+def request_to_be_mocked_news():
+    """Mockable function for news.google."""
+    return requests.get('https://news.google.com')
+
+
+def request_to_be_mocked_youtube():
+    """Mockable function for youtube."""
+    return requests.get('https://youtube.com')
+
+
+@responses.activate
+def mocked_with_library_resp():
+    """Test responses."""
+    responses.add(
+        responses.GET,
+        'https://news.google.com',
+        body='<html>test data</html>'
+    )
+    r = request_to_be_mocked_news()
+    return r
+
+
+@requests_mock.Mocker()
+def mocked_with_library_req_m(req_mock):
+    """Test requests_mock."""
+    req_mock.get('https://theonion.com')
+    return requests.get('https://theonion.com')
+
+
+def mocked_with_library_u_m():
+    """Test unittest.mock."""
+    with mock.patch('{}.request_to_be_mocked_youtube'.format(__name__)) as tbm:
+        tbm.return_value = None
+        return request_to_be_mocked_youtube()
 
 
 def request_function():
@@ -74,6 +113,19 @@ class MonitorTestCase(unittest.TestCase):
             monitor.analysis['domains'],
             set(['facebook.com', 'graph.facebook.com'])
         )
+
+    def test_mock_filtering(self):
+        """Test mocked calls are filtered out."""
+        monitor = Monitor()
+        request_function()
+        # TODO: Fix so this works with responses.
+        # mocked_with_library_resp()
+        mocked_with_library_u_m()
+        mocked_with_library_req_m()
+        monitor.stop()
+        monitor.refresh()
+        self.assertEqual(monitor.analysis['total_requests'], 1)
+        self.assertEqual(monitor.analysis['domains'], set(['google.com']))
 
     def test_reporting_stdout(self):
         """Test reporting to stdout."""

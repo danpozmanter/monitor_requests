@@ -7,7 +7,7 @@ from requests.utils import urlparse
 from .data import DataHandler
 from .output import OutputHandler
 
-__version__ = '1.2.2'
+__version__ = '1.2.3'
 
 
 class Monitor(object):
@@ -15,8 +15,8 @@ class Monitor(object):
 
     METHODS = ('delete', 'get', 'head', 'options', 'patch', 'post', 'put')
     # Libraries which mock requests by patching it:
+    # (Does not currently work for respones)
     MOCKING_LIBRARIES = ('requests_mock',)
-    # responses and unittest.mock don't seem to show up.
 
     def __init__(self, domains=[], server_port=None, mock=True):
         """Initialize Monitor, hot patch requests.

@@ -5,7 +5,13 @@ monitor requests
 
 A tool to check for remote calls via the `requests`_ module.
 
-Find out which external apis your code is calling, and optionally find where calls are taking place and capture the responses.
+Find out which external apis your code is calling.
+
+Optionally:
+    * Find where calls are taking place.
+    * Capture the responses and response status codes.
+    * Filter by domain
+    * Run as a server for parallel tests
 
 **Usage**
 

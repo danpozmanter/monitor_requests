@@ -12,7 +12,7 @@ class OutputHandler(object):
         tracebacks=False,
         responses=False,
         debug=False,
-        inspect_limit=10,
+        inspect_limit=None,
         logged_requests={},
         analysis={}
     ):
@@ -60,8 +60,9 @@ class OutputHandler(object):
     def _output_tracebacks(self, url):
         self.output.write('______Tracebacks_____\n')
         for tb in self.logged_requests[url]['tracebacks']:
-            self.output.write('{}\n'.format(
-                ''.join(tb[-self.inspect_limit:]).strip()))
+            if self.inspect_limit:
+                tb = tb[-self.inspect_limit:]
+            self.output.write('{}\n'.format(''.join(tb).strip()))
 
     def _output_urls(self):
         """Output URLS.

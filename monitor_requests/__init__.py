@@ -7,13 +7,16 @@ from requests.utils import urlparse
 from .data import DataHandler
 from .output import OutputHandler
 
-__version__ = '1.1.0'
+__version__ = '1.2.0'
 
 
 class Monitor(object):
     """Monitor class to handle patching."""
 
     METHODS = ('delete', 'get', 'head', 'options', 'patch', 'post', 'put')
+    # Libraries which mock requests by patching it:
+    MOCKING_LIBRARIES = ('requests_mock',)
+    # responses and unittest.mock don't seem to show up.
 
     def __init__(self, domains=[], server_port=None, mock=True):
         """Initialize Monitor, hot patch requests.
@@ -76,6 +79,13 @@ class Monitor(object):
                 matched = True
         return matched
 
+    def _check_mocked(self, tb_list):
+        traceback = str(tb_list)
+        for library in self.MOCKING_LIBRARIES:
+            if '/{}/'.format(library) in traceback:
+                return True
+        return False
+
     def _log_request(self, url, response, duration):
         """Log request, store traceback/response data and update counts."""
         domain = urlparse(url).netloc
@@ -83,6 +93,8 @@ class Monitor(object):
             return
         m_init = 'monitor_requests/__init__.py'
         tb_list = [f for f in traceback.format_stack() if m_init not in f]
+        if not self._check_mocked(tb_list):
+            return
         self.data.log(url, domain, response, tb_list, duration)
 
     def refresh(self):

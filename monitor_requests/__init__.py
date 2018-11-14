@@ -7,7 +7,7 @@ from requests.utils import urlparse
 from .data import DataHandler
 from .output import OutputHandler
 
-__version__ = '1.0.1'
+__version__ = '1.1.0'
 
 
 class Monitor(object):
@@ -15,24 +15,30 @@ class Monitor(object):
 
     METHODS = ('delete', 'get', 'head', 'options', 'patch', 'post', 'put')
 
-    def __init__(self, domains=[], server_port=None):
+    def __init__(self, domains=[], server_port=None, mock=True):
         """Initialize Monitor, hot patch requests.
 
-        :param domains:: List of regex patterns to match against.
+        :param domains: List. Regex patterns to match against.
+        :param server_port: Int. Server mode: witn monitor_requests_server
+        running on the specified port.
+        :param mock: Boolean. Mock requests. Default True, set to False
+        when running in server mode from the test suite/session level.
         """
         self.domain_patterns = [
             re.compile(domain_pattern) for domain_pattern in domains
         ]
-        # Mocking
-        import requests
-        self.stock_requests_method = requests.request
-        requests.request = self._generate_mocked_request()
-        for method in self.METHODS:
-            stock_method_name = 'stock_{}'.format(method)
-            setattr(self, stock_method_name, getattr(requests, method))
-            setattr(requests, method, self._generate_mocked_request_method(
-                stock_method_name))
         self.data = DataHandler(server_port=server_port)
+        # Mocking
+        self.mock = mock
+        if mock:
+            import requests
+            self.stock_requests_method = requests.request
+            requests.request = self._generate_mocked_request()
+            for method in self.METHODS:
+                stock_method_name = 'stock_{}'.format(method)
+                setattr(self, stock_method_name, getattr(requests, method))
+                setattr(requests, method, self._generate_mocked_request_method(
+                    stock_method_name))
 
     def _generate_mocked_request(self):
         """Generate mock functions for http request.
@@ -91,7 +97,7 @@ class Monitor(object):
         debug=False,
         inspect_limit=10,
         output=sys.stdout,
-        stop=True
+        tear_down=True
     ):
         """Print out the requests, general analysis, and optionally unique tracebacks.
 
@@ -103,7 +109,7 @@ class Monitor(object):
         :param debug: Boolean. Convenience to display tracebacks and responses.
         :param inspect_limit: Integer. How deep the stack trace should be.
         :param output: Stream. Output destination.
-        :param stop: Undo the hotpatching (True by default).
+        :param tear_down: Undo the hotpatching (True by default), delete data.
         """
         tracebacks = tracebacks or debug
         responses = responses or debug
@@ -113,11 +119,18 @@ class Monitor(object):
             self.logged_requests, self.analysis
         )
         output_handler.write()
-        if stop:
-            self.stop()
+        if tear_down:
+            self.stop(delete=True)
 
-    def stop(self):
-        """Undo the hotpatching."""
+    def stop(self, delete=False):
+        """Undo the hotpatching.
+
+        :param delete: Boolean. Delete data (only with server mode).
+        """
+        if delete:
+            self.data.delete()
+        if not self.mock:
+            return
         import requests
         requests.request = self.stock_requests_method
         for method in self.METHODS:

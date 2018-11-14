@@ -95,12 +95,13 @@ If you want to activate monitor_requests for an entire test suite running parall
 .. code:: python
 
     def run_suite(self, suite, **kwargs):
-        monitor = monitor_requests.Monitor(server_port=9003)
+        # Make sure to turn off mocking at the suit or session level.
+        monitor = monitor_requests.Monitor(server_port=9003, mock=False)
         test_result = super(ReelioTestRunner, self).run_suite(suite, **kwargs)
         monitor.report()
         return test_result
 
-You will likely need to do additional overrides in your TestCase classes:
+You will need to do additional calls in your TestCase classes:
 
 .. code:: python
 
@@ -108,7 +109,13 @@ You will likely need to do additional overrides in your TestCase classes:
 
         @classmethod
         def setUpClass(cls):
+            # Same port, and same domain filtering if applicable.
             cls.monitor = monitor_requests.Monitor(server_port=9003)
+
+        @classmethod
+        def tearDownClass(cls):
+            # Make sure to stop the mocking in the tear down.
+            cls.monitor.stop()
 
 Note that here there is no tearDownClass and no call to either stop() or report().
 That only happens at the session level.

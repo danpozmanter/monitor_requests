@@ -34,17 +34,21 @@ class OutputHandler(object):
 
         :param output: Stream. Output destination.
         """
+        tb = 0
+        for url in self.logged_requests:
+            tb += len(self.logged_requests[url]['tracebacks'])
         self.output.write('___________Analysis__________\n\n')
-        self.output.write('Total Requests: {}\n'.format(
+        self.output.write('Total Requests:    {}\n'.format(
             self.analysis['total_requests']))
-        self.output.write('Time (Seconds): {}\n'.format(
+        self.output.write('Unique Tracebacks: {}\n'.format(tb))
+        self.output.write('Time (Seconds):    {}\n'.format(
             self.analysis['duration'])
         )
-        self.output.write('URL Count:      {}\n'.format(
+        self.output.write('URL Count:         {}\n'.format(
             len(self.logged_requests.keys())))
-        self.output.write('Domain Count:   {}\n'.format(
+        self.output.write('Domain Count:      {}\n'.format(
             len(self.analysis['domains'])))
-        self.output.write('Domains:        {}\n'.format(
+        self.output.write('Domains:           {}\n'.format(
             ', '.join(sorted(list(self.analysis['domains'])))))
 
     def _output_responses(self, url):

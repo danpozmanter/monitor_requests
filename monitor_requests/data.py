@@ -12,7 +12,10 @@ class DataHandler(object):
         :param server_port: Int. local port.
         """
         self.server_port = server_port
-        self.reset()
+        self.logged_requests = {}
+        self.analysis = {
+            'total_requests': 0, 'domains': set(), 'duration': 0
+        }
 
     def _delete(self):
         http = urllib3.PoolManager()
@@ -50,6 +53,12 @@ class DataHandler(object):
                 resp.status
             ))
 
+    def delete(self):
+        """Delete data from server if applicable."""
+        if not self.server_port:
+            return
+        self._delete()
+
     def log(self, url, domain, response, tb_list, duration):
         """Log request, store traceback/response data and update counts."""
         if self.server_port:
@@ -77,16 +86,6 @@ class DataHandler(object):
             self.analysis['duration'] += duration
             self.analysis['total_requests'] += 1
             self.analysis['domains'].add(domain)
-
-    def reset(self):
-        """Reset data."""
-        if not self.server_port:
-            self.logged_requests = {}
-            self.analysis = {
-                'total_requests': 0, 'domains': set(), 'duration': 0
-            }
-        else:
-            self._delete()
 
     def retrieve(self):
         """Retrieve data from server or instance."""

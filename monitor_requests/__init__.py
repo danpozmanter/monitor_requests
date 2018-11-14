@@ -7,7 +7,7 @@ from requests.utils import urlparse
 from .data import DataHandler
 from .output import OutputHandler
 
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 
 
 class Monitor(object):
@@ -93,7 +93,7 @@ class Monitor(object):
             return
         m_init = 'monitor_requests/__init__.py'
         tb_list = [f for f in traceback.format_stack() if m_init not in f]
-        if not self._check_mocked(tb_list):
+        if self._check_mocked(tb_list):
             return
         self.data.log(url, domain, response, tb_list, duration)
 

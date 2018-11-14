@@ -5,10 +5,7 @@ monitor requests
 
 A tool to check for remote calls via the `requests`_ module.
 
-Working on a large and complicated codebase with lot's of slow unit tests?
-Suspect external API calls are slowing things down?
-
-Here's a quick tool for just that purpose.
+Find out which external apis your code is calling, and optionally find where calls are taking place and capture the responses.
 
 **Usage**
 

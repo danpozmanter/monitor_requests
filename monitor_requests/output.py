@@ -54,6 +54,7 @@ class OutputHandler(object):
     def _output_responses(self, url):
         self.output.write('_______Responses______\n')
         for rs in self.logged_requests[url]['responses']:
+            self.output.write('____Response____\n')
             self.output.write('<StatusCode>{}</StatusCode>\n'.format(rs[0]))
             self.output.write('<Content>{}</Content>\n'.format(rs[1]))
 
@@ -62,6 +63,7 @@ class OutputHandler(object):
         for tb in self.logged_requests[url]['tracebacks']:
             if self.inspect_limit:
                 tb = tb[-self.inspect_limit:]
+            self.output.write('____Traceback____\n')
             self.output.write('{}\n'.format(''.join(tb).strip()))
 
     def _output_urls(self):

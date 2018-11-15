@@ -7,7 +7,7 @@ from requests.utils import urlparse
 from .data import DataHandler
 from .output import OutputHandler
 
-__version__ = '1.2.4'
+__version__ = '1.2.5'
 
 
 class Monitor(object):

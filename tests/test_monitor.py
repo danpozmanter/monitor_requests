@@ -47,7 +47,7 @@ def mocked_with_library_u_m():
 
 def request_function():
     """Request call."""
-    return requests.request('GET', 'http://google.com')
+    return requests.request('GET', 'http://www.google.com')
 
 
 def get_function():
@@ -74,7 +74,7 @@ class MonitorTestCase(unittest.TestCase):
         get_function()
         monitor.stop()
         monitor.refresh()
-        self.assertEqual(monitor.analysis['total_requests'], 1)
+        self.assertEqual(monitor.analysis['total_requests'], 2)
         self.assertTrue(monitor.analysis['duration'] > 0)
 
     def test_reporting(self):
@@ -97,8 +97,10 @@ class MonitorTestCase(unittest.TestCase):
         get_function_fb_graph()
         monitor.stop()
         monitor.refresh()
-        self.assertEqual(monitor.analysis['total_requests'], 1)
-        self.assertEqual(monitor.analysis['domains'], set(['google.com']))
+        self.assertEqual(monitor.analysis['total_requests'], 2)
+        self.assertEqual(
+            monitor.analysis['domains'], set(['www.google.com', 'google.com'])
+        )
 
     def test_domain_filtering_fb(self):
         """Test domain filtering actually works."""
@@ -108,31 +110,31 @@ class MonitorTestCase(unittest.TestCase):
         get_function_fb_graph()
         monitor.stop()
         monitor.refresh()
-        self.assertEqual(monitor.analysis['total_requests'], 2)
+        self.assertEqual(monitor.analysis['total_requests'], 4)
         self.assertEqual(
             monitor.analysis['domains'],
-            set(['facebook.com', 'graph.facebook.com'])
+            set(['facebook.com', 'www.facebook.com', 'graph.facebook.com'])
         )
 
     def test_mock_filtering(self):
         """Test mocked calls are filtered out."""
         monitor = Monitor()
         request_function()
-        # TODO: Fix so this works with responses.
-        # mocked_with_library_resp()
+        mocked_with_library_resp()
         mocked_with_library_u_m()
         mocked_with_library_req_m()
         monitor.stop()
         monitor.refresh()
+        print(monitor.analysis['domains'])
         self.assertEqual(monitor.analysis['total_requests'], 1)
-        self.assertEqual(monitor.analysis['domains'], set(['google.com']))
+        self.assertEqual(monitor.analysis['domains'], set(['www.google.com']))
 
     def test_reporting_stdout(self):
         """Test reporting to stdout."""
         monitor = Monitor()
         request_function()
         monitor.report(output=sys.stdout)
-        self.assertEqual(monitor.analysis['domains'], set(['google.com']))
+        self.assertEqual(monitor.analysis['domains'], set(['www.google.com']))
 
 
 if __name__ == '__main__':

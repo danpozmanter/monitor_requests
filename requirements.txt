@@ -1,9 +1,9 @@
 # Core
 requests==2.20.1
+mock==2.0.0
 # Server
 tornado==5.1.1
 # Testing
-mock==2.0.0
 pytest==3.10.1
 requests_mock==1.5.2
 responses==0.10.3

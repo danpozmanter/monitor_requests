@@ -13,6 +13,8 @@ Optionally:
     * Filter by domain
     * Run as a server for parallel tests
 
+Note - as of 2.x now mocks the `send()` method on requests' HTTPAdapter class.
+
 **Usage**
 
 .. code:: python
@@ -99,7 +101,7 @@ If you want to activate monitor_requests for an entire test suite running parall
 
     def run_suite(self, suite, **kwargs):
         # Make sure to turn off mocking at the suit or session level.
-        monitor = monitor_requests.Monitor(server_port=9003, mock=False)
+        monitor = monitor_requests.Monitor(server_port=9003, mocking=False)
         test_result = super(ReelioTestRunner, self).run_suite(suite, **kwargs)
         monitor.report()
         return test_result
@@ -127,7 +129,7 @@ That only happens at the session level.
 
 .. code:: bash
     
-    pip install MonitorRequests
+    pip install monitor_requests
 
 **Example Output**
 

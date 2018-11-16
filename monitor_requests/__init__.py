@@ -3,28 +3,28 @@ import datetime
 import re
 import sys
 import traceback
+import mock
 from requests.utils import urlparse
 from .data import DataHandler
 from .output import OutputHandler
 
-__version__ = '1.2.5'
+__version__ = '2.0.0'
 
 
 class Monitor(object):
     """Monitor class to handle patching."""
 
-    METHODS = ('delete', 'get', 'head', 'options', 'patch', 'post', 'put')
     # Libraries which mock requests by patching it:
-    # (Does not currently work for respones)
+    # unittest.mock / mock and responses will not show up in tracebacks.
     MOCKING_LIBRARIES = ('requests_mock',)
 
-    def __init__(self, domains=[], server_port=None, mock=True):
+    def __init__(self, domains=[], server_port=None, mocking=True):
         """Initialize Monitor, hot patch requests.
 
         :param domains: List. Regex patterns to match against.
         :param server_port: Int. Server mode: witn monitor_requests_server
         running on the specified port.
-        :param mock: Boolean. Mock requests. Default True, set to False
+        :param mocking: Boolean. Mock requests. Default True, set to False
         when running in server mode from the test suite/session level.
         """
         self.domain_patterns = [
@@ -32,43 +32,30 @@ class Monitor(object):
         ]
         self.data = DataHandler(server_port=server_port)
         # Mocking
-        self.mock = mock
-        if mock:
-            import requests
-            self.stock_requests_method = requests.request
-            requests.request = self._generate_mocked_request()
-            for method in self.METHODS:
-                stock_method_name = 'stock_{}'.format(method)
-                setattr(self, stock_method_name, getattr(requests, method))
-                setattr(requests, method, self._generate_mocked_request_method(
-                    stock_method_name))
+        self.mocking = mocking
+        if mocking:
+            from requests.adapters import HTTPAdapter
+            self.stock_send = HTTPAdapter.send
+            self.send_patcher = mock.patch.object(
+                HTTPAdapter,
+                'send',
+                side_effect=self._generate_mocked_send(),
+                autospec=True
+            )
+            self.send_patcher.start()
 
-    def _generate_mocked_request(self):
-        """Generate mock functions for http request.
+    def _generate_mocked_send(self):
+        """Generate mock function for http request.
 
-        :return: Mocked request.
+        :return: Mocked send method for HTTPAdapter.
         """
-        def mock_request(method, url, **kwargs):
+        def mock_send(instance, request, *args, **kwargs):
             start = datetime.datetime.now()
-            response = self.stock_requests_method(method, url, **kwargs)
+            response = self.stock_send(instance, request, *args, **kwargs)
             duration = (datetime.datetime.now() - start).total_seconds()
-            self._log_request(url, response, duration)
+            self._log_request(request.url, response, duration)
             return response
-        return mock_request
-
-    def _generate_mocked_request_method(self, stock_method_name):
-        """Generate mock functions for http methods.
-
-        :param stock_method_name: String.
-        :return: Mocked request method
-        """
-        def mock_request_method(url, **kwargs):
-            start = datetime.datetime.now()
-            response = getattr(self, stock_method_name)(url, **kwargs)
-            duration = (datetime.datetime.now() - start).total_seconds()
-            self._log_request(url, response, duration)
-            return response
-        return mock_request_method
+        return mock_send
 
     def _check_domain(self, domain):
         if not self.domain_patterns:
@@ -141,9 +128,6 @@ class Monitor(object):
         """
         if delete:
             self.data.delete()
-        if not self.mock:
+        if not self.mocking:
             return
-        import requests
-        requests.request = self.stock_requests_method
-        for method in self.METHODS:
-            setattr(requests, method, getattr(self, 'stock_{}'.format(method)))
+        self.send_patcher.stop()

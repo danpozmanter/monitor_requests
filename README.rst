@@ -13,7 +13,9 @@ Optionally:
     * Filter by domain
     * Run as a server for parallel tests
 
-Note - as of 2.x now mocks the `send()` method on requests' HTTPAdapter class.
+2.x Notes:
+    * Now mocks the `send()` method on requests' HTTPAdapter class.
+    * Now `monitor-requests` instead of `MonitorRequests`
 
 **Installation**
 
@@ -142,6 +144,7 @@ With `debug=True`:
 
     __________URL________
     URL:      http://facebook.com?param=test
+    Methods:  GET
     Requests: 1
     ______Tracebacks_____
     File "example.py", line 22, in <module>
@@ -157,6 +160,7 @@ With `debug=True`:
 
     __________URL________
     URL:      http://google.com
+    Methods:  GET
     Requests: 1
     ______Tracebacks_____
     File "example.py", line 22, in <module>

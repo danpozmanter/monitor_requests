@@ -77,6 +77,9 @@ class OutputHandler(object):
         for url in sorted(self.logged_requests.keys()):
             self.output.write('__________URL________\n')
             self.output.write('URL:      {}\n'.format(url))
+            self.output.write('Methods:  {}\n'.format(
+                ', '.join(sorted(list(self.logged_requests[url]['methods'])))
+            ))
             self.output.write('Requests: {}\n'.format(
                 self.logged_requests[url]['count']))
             if self.tracebacks:

@@ -23,6 +23,7 @@ class ApiTestCase(AsyncHTTPTestCase):
             '/',
             body=json.dumps({
                 'url': 'http://google.com/?whatever',
+                'method': 'GET',
                 'domain': 'google.com',
                 'response_content': '<html>example</html>',
                 'response_status_code': 200,
@@ -31,4 +32,23 @@ class ApiTestCase(AsyncHTTPTestCase):
             }),
             method='POST'
         )
+        self.assertEqual(response.code, 200)
+
+    def test_post_and_retrieve(self):
+        """Test basic post and get."""
+        response = self.fetch(
+            '/',
+            body=json.dumps({
+                'url': 'http://google.com/?whatever',
+                'method': 'GET',
+                'domain': 'google.com',
+                'response_content': '<html>example</html>',
+                'response_status_code': 200,
+                'duration': 2.1,
+                'traceback_list': ['a', 'b']
+            }),
+            method='POST'
+        )
+        self.assertEqual(response.code, 200)
+        response = self.fetch('/', method='GET')
         self.assertEqual(response.code, 200)

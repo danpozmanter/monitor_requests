@@ -21,6 +21,7 @@ def init_db():
     conn.text_factory = lambda x: unicode(x, 'utf-8', 'ignore')
     c = conn.cursor()
     c.execute('CREATE TABLE logged_requests (url text, duration real)')
+    c.execute('CREATE TABLE methods (url text, method text)')
     c.execute('CREATE TABLE tracebacks (url text, traceback text)')
     c.execute(
         'CREATE TABLE responses (url text, status_code integer, content text)'
@@ -53,6 +54,7 @@ class MainHandler(tornado.web.RequestHandler):
         """Reset stored data."""
         c = self.conn.cursor()
         c.execute('DELETE FROM logged_requests')
+        c.execute('DELETE FROM methods')
         c.execute('DELETE FROM tracebacks')
         c.execute('DELETE FROM responses')
         c.execute('DELETE FROM domains')
@@ -63,7 +65,11 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         """Retrieve stored data."""
         logged_requests = {}
-        analysis = {'total_requests': 0, 'domains': set(), 'duration': 0}
+        analysis = {
+            'total_requests': 0,
+            'domains': set(),
+            'duration': 0
+        }
         c = self.conn.cursor()
         c.execute('SELECT * from logged_requests')
         for row in c.fetchall():
@@ -71,6 +77,7 @@ class MainHandler(tornado.web.RequestHandler):
             if url not in logged_requests:
                 logged_requests[url] = {
                     'count': 0,
+                    'methods': set(),
                     'tracebacks': set(),
                     'responses': set()
                 }
@@ -80,7 +87,10 @@ class MainHandler(tornado.web.RequestHandler):
         c.execute('SELECT * from domains')
         for row in c.fetchall():
             analysis['domains'].add(row[0])
-        c.execute('SELECT * from tracebacks')
+        c.execute('SELECT * from methods')
+        for row in c.fetchall():
+            url, method = row
+            logged_requests[url]['methods'].add(method)
         for row in c.fetchall():
             url, traceback = row
             logged_requests[url]['tracebacks'].add(
@@ -105,6 +115,10 @@ class MainHandler(tornado.web.RequestHandler):
         c.execute(
             'INSERT INTO logged_requests (url, duration) VALUES (?,?)',
             (url, request_data.get('duration'))
+        )
+        c.execute(
+            'INSERT INTO methods (url, method) VALUES (?,?)',
+            (url, request_data.get('method'))
         )
         c.execute(
             'INSERT INTO tracebacks (url, traceback) VALUES (?,?)',

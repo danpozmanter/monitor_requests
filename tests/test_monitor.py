@@ -125,7 +125,6 @@ class MonitorTestCase(unittest.TestCase):
         mocked_with_library_req_m()
         monitor.stop()
         monitor.refresh()
-        print(monitor.analysis['domains'])
         self.assertEqual(monitor.analysis['total_requests'], 1)
         self.assertEqual(monitor.analysis['domains'], set(['www.google.com']))
 

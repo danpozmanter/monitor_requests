@@ -59,12 +59,13 @@ class DataHandler(object):
             return
         self._delete()
 
-    def log(self, url, domain, response, tb_list, duration):
+    def log(self, url, domain, method, response, tb_list, duration):
         """Log request, store traceback/response data and update counts."""
         if self.server_port:
             self._post({
                 'url': url,
                 'domain': domain,
+                'method': method,
                 'response_content': str(response.content),
                 'response_status_code': response.status_code,
                 'duration': duration,
@@ -74,10 +75,12 @@ class DataHandler(object):
             if url not in self.logged_requests:
                 self.logged_requests[url] = {
                     'count': 0,
+                    'methods': set(),
                     'tracebacks': set(),
                     'responses': set()
                 }
             self.logged_requests[url]['count'] += 1
+            self.logged_requests[url]['methods'].add(method)
             self.logged_requests[url]['tracebacks'].add(tuple(tb_list))
             self.logged_requests[url]['responses'].add((
                 response.status_code,

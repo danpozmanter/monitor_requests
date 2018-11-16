@@ -8,7 +8,7 @@ from requests.utils import urlparse
 from .data import DataHandler
 from .output import OutputHandler
 
-__version__ = '2.0.0'
+__version__ = '2.1.0'
 
 
 class Monitor(object):
@@ -53,7 +53,7 @@ class Monitor(object):
             start = datetime.datetime.now()
             response = self.stock_send(instance, request, *args, **kwargs)
             duration = (datetime.datetime.now() - start).total_seconds()
-            self._log_request(request.url, response, duration)
+            self._log_request(request.url, request.method, response, duration)
             return response
         return mock_send
 
@@ -73,7 +73,7 @@ class Monitor(object):
                 return True
         return False
 
-    def _log_request(self, url, response, duration):
+    def _log_request(self, url, method, response, duration):
         """Log request, store traceback/response data and update counts."""
         domain = urlparse(url).netloc
         if not self._check_domain(domain):
@@ -82,7 +82,7 @@ class Monitor(object):
         tb_list = [f for f in traceback.format_stack() if m_init not in f]
         if self._check_mocked(tb_list):
             return
-        self.data.log(url, domain, response, tb_list, duration)
+        self.data.log(url, domain, method, response, tb_list, duration)
 
     def refresh(self):
         """Refresh data from store (server or instance)."""

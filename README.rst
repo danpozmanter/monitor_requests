@@ -15,6 +15,12 @@ Optionally:
 
 Note - as of 2.x now mocks the `send()` method on requests' HTTPAdapter class.
 
+**Installation**
+
+.. code:: bash
+    
+    pip install monitor-requests
+
 **Usage**
 
 .. code:: python
@@ -124,12 +130,6 @@ You will need to do additional calls in your TestCase classes:
 
 Note that here there is no tearDownClass and no call to either stop() or report().
 That only happens at the session level.
-
-**Installation**
-
-.. code:: bash
-    
-    pip install monitor-requests
 
 **Example Output**
 

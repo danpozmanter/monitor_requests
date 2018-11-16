@@ -129,7 +129,7 @@ That only happens at the session level.
 
 .. code:: bash
     
-    pip install monitor_requests
+    pip install monitor-requests
 
 **Example Output**
 
@@ -195,5 +195,5 @@ With `debug=False`:
 .. _tornado: https://github.com/tornadoweb/tornado
 .. |Build Status| image:: https://travis-ci.org/danpozmanter/monitor_requests.svg?branch=master
    :target: https://travis-ci.org/danpozmanter/monitor_requests
-.. |PyPI| image:: https://img.shields.io/pypi/v/MonitorRequests.svg
-   :target: https://pypi.python.org/pypi/MonitorRequests/
+.. |PyPI| image:: https://img.shields.io/pypi/v/monitor_requests.svg
+   :target: https://pypi.python.org/pypi/monitor_requests/

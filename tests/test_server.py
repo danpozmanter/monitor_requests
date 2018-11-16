@@ -1,4 +1,5 @@
 """Simple server tests."""
+# coding=utf-8
 import json
 from tornado.testing import AsyncHTTPTestCase
 from monitor_requests.server import make_app
@@ -42,7 +43,7 @@ class ApiTestCase(AsyncHTTPTestCase):
                 'url': 'http://google.com/?whatever',
                 'method': 'GET',
                 'domain': 'google.com',
-                'response_content': '<html>example</html>',
+                'response_content': u'<html>exampleθ</html>',
                 'response_status_code': 200,
                 'duration': 2.1,
                 'traceback_list': ['a', 'b']

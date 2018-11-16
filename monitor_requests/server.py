@@ -18,7 +18,7 @@ from tornado.escape import json_decode
 def init_db():
     """Initialize the temp db."""
     conn = sqlite3.connect(':memory:')
-    conn.text_factory = lambda x: unicode(x, 'utf-8', 'ignore')
+    conn.text_factory = lambda x: x.encode('utf-8', 'ignore')
     c = conn.cursor()
     c.execute('CREATE TABLE logged_requests (url text, duration real)')
     c.execute('CREATE TABLE methods (url text, method text)')
@@ -64,47 +64,51 @@ class MainHandler(tornado.web.RequestHandler):
     @gen.coroutine
     def get(self):
         """Retrieve stored data."""
-        logged_requests = {}
-        analysis = {
-            'total_requests': 0,
-            'domains': set(),
-            'duration': 0
-        }
-        c = self.conn.cursor()
-        c.execute('SELECT * from logged_requests')
-        for row in c.fetchall():
-            url, duration = row
-            if url not in logged_requests:
-                logged_requests[url] = {
-                    'count': 0,
-                    'methods': set(),
-                    'tracebacks': set(),
-                    'responses': set()
-                }
-            logged_requests[url]['count'] += 1
-            analysis['total_requests'] += 1
-            analysis['duration'] += duration
-        c.execute('SELECT * from domains')
-        for row in c.fetchall():
-            analysis['domains'].add(row[0])
-        c.execute('SELECT * from methods')
-        for row in c.fetchall():
-            url, method = row
-            logged_requests[url]['methods'].add(method)
-        for row in c.fetchall():
-            url, traceback = row
-            logged_requests[url]['tracebacks'].add(
-                tuple(json.loads(traceback))
-            )
-        c.execute('SELECT * from responses')
-        for row in c.fetchall():
-            url, status_code, content = row
-            logged_requests[url]['responses'].add((status_code, content))
-        c.close()
-        self.write(json.dumps({
-            'logged_requests': logged_requests,
-            'analysis': analysis
-        }, cls=MonitorEncoder))
+        try:
+            logged_requests = {}
+            analysis = {
+                'total_requests': 0,
+                'domains': set(),
+                'duration': 0
+            }
+            c = self.conn.cursor()
+            c.execute('SELECT * from logged_requests')
+            for row in c.fetchall():
+                url, duration = row
+                if url not in logged_requests:
+                    logged_requests[url] = {
+                        'count': 0,
+                        'methods': set(),
+                        'tracebacks': set(),
+                        'responses': set()
+                    }
+                logged_requests[url]['count'] += 1
+                analysis['total_requests'] += 1
+                analysis['duration'] += duration
+            c.execute('SELECT * from domains')
+            for row in c.fetchall():
+                analysis['domains'].add(row[0])
+            c.execute('SELECT * from methods')
+            for row in c.fetchall():
+                url, method = row
+                logged_requests[url]['methods'].add(method)
+            for row in c.fetchall():
+                url, traceback = row
+                logged_requests[url]['tracebacks'].add(
+                    tuple(json.loads(traceback))
+                )
+            c.execute('SELECT * from responses')
+            for row in c.fetchall():
+                url, status_code, content = row
+                logged_requests[url]['responses'].add((status_code, content))
+            c.close()
+            self.write(json.dumps({
+                'logged_requests': logged_requests,
+                'analysis': analysis
+            }, cls=MonitorEncoder))
+        except Exception as e:
+            print(e)
+            print(dir(e))
 
     @gen.coroutine
     def post(self):

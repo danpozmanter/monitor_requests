@@ -95,7 +95,7 @@ For finer tuned control over output:
 
 * Use `debug=True` to show urls, responses, and tracebacks.
 * Use `urls=True` to show urls.
-* Use `tracebacks=True` or `respones=True` to show tracebacks or responses (urls will be shown as well, as both tracebacks and responses are organized by url).
+* Use `tracebacks=True` or `responses=True` to show tracebacks or responses (urls will be shown as well, as both tracebacks and responses are organized by url).
 
 ***Server Mode***
 

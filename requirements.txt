@@ -2,7 +2,7 @@
 requests==2.20.1
 mock==2.0.0
 # Server
-tornado==5.1.1
+tornado==6.3.2
 # Testing
 pytest==3.10.1
 requests_mock==1.5.2
